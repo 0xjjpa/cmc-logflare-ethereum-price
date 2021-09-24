@@ -1,0 +1,13 @@
+name: 5-minute-cron
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log Ethereum price into Logflare using CMC API
+        run: |
+          curl --location --request GET 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?slug=ethereum' \
+          --header 'X-CMC_PRO_API_KEY: ${{ secrets.CMC_PRO_API_KEY }}' \
+          | curl -X POST --data-binary @- "https://api.logflare.app/logs/json?api_key=${{ secrets.LOGFLARE_API_KEY }}&source=${{ secrets.LOGFLARE_SOURCE_ID }}" -H "Accept: application/json" -H "Content-Type: application/json"
